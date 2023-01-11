@@ -4,16 +4,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
 
-@Builder
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public class NormalizedJob {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Job {
 
     @Id
-    private long id;
     private String title;
-    private String description;
 }
