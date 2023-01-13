@@ -49,7 +49,7 @@ public class NormalizedJobTitleService {
         Job bestMatchJob = Job.builder().build();
 
         for (Job job : jobList) {
-            double actualSimilarity = calculateSimilarity(titleToCompare, job.getTitle());
+            double actualSimilarity = calculateSimilarity(titleToCompare.toUpperCase(), job.getTitle().toUpperCase());
 
             if(bestSimilarity < actualSimilarity) {
                 bestSimilarity = actualSimilarity;
