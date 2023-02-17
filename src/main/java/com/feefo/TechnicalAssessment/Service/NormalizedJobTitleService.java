@@ -5,6 +5,7 @@ import com.feefo.TechnicalAssessment.Repository.NormalizedJobTitleRepository;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class NormalizedJobTitleService {
     public Job normalizerJobTitle(String titleToCompare) {
 
         if (StringUtils.isBlank(titleToCompare)) {
-            throw new IllegalArgumentException("The job title must not be null or empty");
+            throw new ResourceNotFoundException("The job title must not be null or empty");
         }
 
         return matchingTitles(titleToCompare);
