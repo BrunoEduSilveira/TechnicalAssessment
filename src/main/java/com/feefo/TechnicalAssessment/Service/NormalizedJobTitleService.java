@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-
-import static java.util.Objects.isNull;
+import java.util.Objects;
 
 @Service
 @NoArgsConstructor
@@ -19,52 +19,44 @@ public class NormalizedJobTitleService {
     @Autowired
     NormalizedJobTitleRepository normalizedJobTitleRepository;
 
-    private static final List<String> normalizedJobTitlesList = List.of("Architect", "Software engineer", "Quantity surveyor","Accountant");
+    private static final List<String> normalizedJobTitlesList = List.of("Architect", "Software engineer", "Quantity surveyor", "Accountant");
     public static final List<Job> jobList = new ArrayList<>();
 
-    static{
+    static {
         normalizedJobTitlesList.stream().parallel().forEach(jobTitle -> jobList.add(Job.builder().title(jobTitle).build()));
     }
 
-    public List<Job> AllNormalizedJobsTitles(){
+    public List<Job> AllNormalizedJobsTitles() {
 
-        if(jobList.isEmpty()){
+        if (jobList.isEmpty()) {
             throw new IllegalStateException("The job title list is empty.");
         }
         return jobList;
     }
 
-    public Job normalizerJobTitle(String titleToCompare){
+    public Job normalizerJobTitle(String titleToCompare) {
 
-        if(isNull(titleToCompare) || titleToCompare.isEmpty()){
+        if (StringUtils.isBlank(titleToCompare)) {
             throw new IllegalArgumentException("The job title must not be null or empty");
         }
 
         return matchingTitles(titleToCompare);
     }
 
-    private Job matchingTitles (String titleToCompare){
-
-        double bestSimilarity = Double.MIN_VALUE;
-        Job bestMatchJob = Job.builder().build();
-
-        for (Job job : jobList) {
-            double actualSimilarity = calculateSimilarity(titleToCompare.toUpperCase(), job.getTitle().toUpperCase());
-
-            if(bestSimilarity < actualSimilarity) {
-                bestSimilarity = actualSimilarity;
-                bestMatchJob = job;
-            }
-        }
-        return bestMatchJob;
+    private Job matchingTitles(String titleToCompare) {
+        return jobList.stream()
+                .filter(job -> Objects.nonNull(job.getTitle()))
+                .max(Comparator.comparingDouble(job ->
+                        calculateSimilarity(titleToCompare.toUpperCase(), job.getTitle().toUpperCase())))
+                .orElseThrow(() -> new IllegalStateException("The job title list is empty."));
     }
 
-    private double calculateSimilarity (String titleToCompare, String titleNormalized){
+    private double calculateSimilarity(String titleToCompare, String titleNormalized) {
 
-            double maxLength = Double.max(titleToCompare.length(), titleNormalized.length());
-            if(maxLength > 0){
-                return (maxLength - StringUtils.getLevenshteinDistance(titleToCompare, titleNormalized)) / maxLength;
-            }
+        double maxLength = Double.max(titleToCompare.length(), titleNormalized.length());
+        if (maxLength > 0) {
+            return (maxLength - StringUtils.getLevenshteinDistance(titleToCompare, titleNormalized)) / maxLength;
+        }
         return 1.0;
     }
 }

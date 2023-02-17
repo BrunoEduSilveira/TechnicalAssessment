@@ -23,7 +23,7 @@ public class NormalizedJobTitleController {
     private ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<JobDTO>> getAllJobTitles(){
+    public ResponseEntity<List<JobDTO>> getAllJobTitles() {
         List<Job> jobList = normalizedJobTitleService.AllNormalizedJobsTitles();
         return ResponseEntity.ok().body(jobList.stream()
                 .map(job -> modelMapper.map(job, JobDTO.class))
@@ -31,7 +31,7 @@ public class NormalizedJobTitleController {
     }
 
     @GetMapping("/normalizer")
-    public ResponseEntity<JobDTO> normalizeJobTitle(@RequestBody JobDTO jobDTO){
+    public ResponseEntity<JobDTO> normalizeJobTitle(@RequestBody JobDTO jobDTO) {
         Job jobResponse = normalizedJobTitleService.normalizerJobTitle(jobDTO.getTitle());
         return ResponseEntity.ok().body(modelMapper.map(jobResponse, JobDTO.class));
     }
